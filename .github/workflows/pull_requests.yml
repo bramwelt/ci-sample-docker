@@ -1,0 +1,44 @@
+---
+name: Pull Requests
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/build-push-image@v1
+        with:
+          repository: docker.pkg.github.com/${{ github.repository }}
+          tag_with_ref: true
+          push: false
+  # Push to Github Packges
+  push:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/build-push-image@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          repository: docker.pkg.github.com/${{ github.repository }}
+          tag_with_ref: true
+  # Push to Dockerhub
+  publish:
+    needs: push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/build-push-image@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          repository: docker.io/bramwelttest/${{ github.repository }}
+          tag_with_ref: true
