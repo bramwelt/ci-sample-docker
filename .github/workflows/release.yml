@@ -1,25 +1,27 @@
 ---
-name: Pull Requests
+name: Releases
 
 # yamllint disable-line rule:truthy
 on:
-  pull_request:
+  tags:
 
 env:
+  DOCKER_ORG: 'bramwelttest'
   BUILD_CONTEXT: '.'
   DOCKERFILE_PATH: 'Dockerfile'
   IMAGE: hello-world
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: docker/build-push-action@v1
         with:
-          repository: ${{ github.repository }}/${{ env.IMAGE }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          repository: ${{ env.DOCKER_ORG }}/${{ env.IMAGE }}
+          registry: docker.io
           path: ${{ env.BUILD_CONTEXT }}
           dockerfile: ${{ env.DOCKERFILE_PATH }}
-          tag_with_sha: true
           tag_with_ref: true
-          push: false

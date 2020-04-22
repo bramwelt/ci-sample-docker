@@ -1,9 +1,11 @@
 ---
-name: Pull Requests
+name: Merges
 
 # yamllint disable-line rule:truthy
 on:
-  pull_request:
+  push:
+    branches:
+      - master
 
 env:
   BUILD_CONTEXT: '.'
@@ -11,15 +13,17 @@ env:
   IMAGE: hello-world
 
 jobs:
-  build:
+  # Push to Github Packages
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: docker/build-push-action@v1
         with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}/${{ env.IMAGE }}
+          registry: docker.pkg.github.com
           path: ${{ env.BUILD_CONTEXT }}
           dockerfile: ${{ env.DOCKERFILE_PATH }}
-          tag_with_sha: true
           tag_with_ref: true
-          push: false
