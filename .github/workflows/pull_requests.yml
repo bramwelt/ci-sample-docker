@@ -9,6 +9,7 @@ on:
   pull_request:
 
 env:
+  DOCKER_ORG: 'bramwelttest'
   BUILD_CONTEXT: '.'
   DOCKERFILE_PATH: 'Dockerfile'
   IMAGE: hello-world
@@ -50,7 +51,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-          repository: bramwelttest/ci-sample-docker/${{ env.IMAGE }}
+          repository: ${{ env.DOCKER_ORG }}/${{ env.IMAGE }}
           registry: docker.io
           path: ${{ env.BUILD_CONTEXT }}
           dockerfile: ${{ env.DOCKERFILE_PATH }}
