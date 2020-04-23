@@ -3,15 +3,18 @@ name: Releases
 
 # yamllint disable-line rule:truthy
 on:
-  tags:
+  # NOTE: Github releases should also trigger 'push: tags' events
+  push:
+    tags:
 
 env:
-  DOCKER_ORG: 'bramwelttest'
   BUILD_CONTEXT: '.'
   DOCKERFILE_PATH: 'Dockerfile'
-  IMAGE: hello-world
+  DOCKER_REPOSITORY: ${{ github.repository_owner }}
+  DOCKER_IMAGE: ${{ github.event.repository.name }}
 
 jobs:
+  # Push to Github Packages
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -20,8 +23,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-          repository: ${{ env.DOCKER_ORG }}/${{ env.IMAGE }}
+          repository: ${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}
           registry: docker.io
           path: ${{ env.BUILD_CONTEXT }}
           dockerfile: ${{ env.DOCKERFILE_PATH }}
           tag_with_ref: true
+        env:
+          DOCKER_REPOSITORY: 'bramwelttest'

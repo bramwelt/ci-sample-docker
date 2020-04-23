@@ -2,18 +2,15 @@
 name: Merges
 
 # yamllint disable-line rule:truthy
-on:
-  push:
-    branches:
-      - master
+on: push
 
 env:
-  BUILD_CONTEXT: '.'
-  DOCKERFILE_PATH: 'Dockerfile'
-  IMAGE: hello-world
+  DOCKER_BUILDCONTEXT: '.'
+  DOCKER_FILEPATH: 'Dockerfile'
+  DOCKER_REPOSITORY: ${{ github.repository }}
+  DOCKER_IMAGE: ${{ github.event.repository.name }}
 
 jobs:
-  # Push to Github Packages
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -22,8 +19,17 @@ jobs:
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}/${{ env.IMAGE }}
+          repository: ${{ env.DOCKER_REPOSITORY }}
           registry: docker.pkg.github.com
-          path: ${{ env.BUILD_CONTEXT }}
-          dockerfile: ${{ env.DOCKERFILE_PATH }}
+          path: ${{ env.DOCKER_BUILDCONTEXT }}
+          dockerfile: ${{ env.DOCKER_FILEPATH }}
           tag_with_ref: true
+      - name: Save Docker Images
+        # TODO replace this with build-push-image tag output once added
+        run: |
+            docker save \
+            docker.pkg.github.com/${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:latest
+              | gzip > container.tar.gz
+      - uses: actions/upload-artifact@v1
+        with:
+          path: container.tar.gz

@@ -2,32 +2,21 @@
 name: Pull Requests
 
 # yamllint disable-line rule:truthy
-on:
-  pull_request:
+on: pull_request
 
 env:
-  BUILD_CONTEXT: '.'
-  DOCKERFILE_PATH: 'Dockerfile'
-  IMAGE: hello-world
+  DOCKER_BUILDCONTEXT: '.'
+  DOCKER_FILEPATH: 'Dockerfile'
+  DOCKER_IMAGE: ${{ github.event.repository.name }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
       - uses: actions/checkout@v2
       - uses: docker/build-push-action@v1
         with:
-          repository: ${{ github.repository }}/${{ env.IMAGE }}
-          path: ${{ env.BUILD_CONTEXT }}
-          dockerfile: ${{ env.DOCKERFILE_PATH }}
-          tag_with_sha: true
-          tag_with_ref: true
+          repository: ${{ github.repository }}/${{ env.DOCKER_IMAGE }}
+          path: ${{ env.DOCKER_BUILDCONTEXT }}
+          dockerfile: ${{ env.DOCKER_FILEPATH }}
           push: false
