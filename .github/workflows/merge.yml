@@ -31,7 +31,7 @@ jobs:
         # TODO replace this with build-push-image tag output once added
         run: |
             docker save \
-            docker.pkg.github.com/${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:latest
+            docker.pkg.github.com/${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:latest \
               | gzip > container.tar.gz
       - uses: actions/upload-artifact@v1
         with:
