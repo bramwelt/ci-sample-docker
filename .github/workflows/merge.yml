@@ -22,7 +22,7 @@ jobs:
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ env.DOCKER_REPOSITORY }}
+          repository: ${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}
           registry: docker.pkg.github.com
           path: ${{ env.DOCKER_BUILDCONTEXT }}
           dockerfile: ${{ env.DOCKER_FILEPATH }}
