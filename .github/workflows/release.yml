@@ -6,6 +6,7 @@ on:
   # NOTE: Github releases should also trigger 'push: tags' events
   push:
     tags:
+      - '**'
 
 env:
   BUILD_CONTEXT: '.'
