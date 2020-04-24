@@ -36,3 +36,4 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           path: container.tar.gz
+          name: ${{ env.DOCKER_IMAGE }}
